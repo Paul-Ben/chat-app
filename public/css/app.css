@@ -1,0 +1,84 @@
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    background-color: #f0f2f5;
+    height: 100vh;
+}
+
+#app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Mobile Navigation */
+.mobile-nav {
+    display: none;
+    padding: 10px 15px;
+    background-color: #128c7e;
+    color: white;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mobile-nav .logo {
+    height: 25px;
+}
+
+.mobile-nav-actions i {
+    margin-left: 20px;
+    font-size: 18px;
+}
+
+/* Main Content Wrapper */
+.main-content-wrapper {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Responsive Behavior */
+@media (max-width: 768px) {
+    .mobile-nav {
+        display: flex;
+    }
+    
+    .main-content-wrapper {
+        flex-direction: column;
+    }
+}
+
+/* WhatsApp Specific Elements */
+.back-button {
+    display: none;
+    margin-right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .back-button {
+        display: inline-block;
+    }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
