@@ -17,8 +17,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+    
      // Chat routes
+     Route::get('/chat-users', [ChatController::class, 'loadChatUsers'])->name('chats.users');
      Route::get('/chats', [ChatController::class, 'index'])->name('chats.index');
      Route::get('/chats/{chat}', [ChatController::class, 'show'])->name('chats.show');
      

@@ -57,10 +57,12 @@ function initChat() {
     });
     
     // Show/hide new chat modal
-    $('#new-chat-btn').on('click', function() {
-        loadUsersForNewChat();
-    });
+    // $('#new-chat-btn').on('click', function() {
+    //     loadUsersForNewChat();
+    // });
+   
 }
+
 
 // Load all chats for the current user
 function loadChats() {
@@ -574,41 +576,7 @@ function createNewGroup(event) {
 }
 
 // Load users for new chat creation
-function loadUsersForNewChat() {
-    $.ajax({
-        url: 'api/users.php',
-        type: 'GET',
-        data: { action: 'list' },
-        dataType: 'json',
-        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('edms_token') },
-        success: function(response) {
-            if (response.success) {
-                users = response.users;
-                
-                // Populate new chat select
-                const newChatSelect = $('#new-chat-user');
-                newChatSelect.empty();
-                newChatSelect.append('<option value="">Select a user</option>');
-                
-                // Populate group chat multiselect
-                const groupUsersSelect = $('#group-users');
-                groupUsersSelect.empty();
-                
-                users.forEach(user => {
-                    if (user.user_id !== currentUser.user_id) {
-                        newChatSelect.append(`<option value="${user.user_id}">${user.username}</option>`);
-                        groupUsersSelect.append(`<option value="${user.user_id}">${user.username}</option>`);
-                    }
-                });
-            } else {
-                showAlert(response.message || 'Failed to load users', 'danger');
-            }
-        },
-        error: function() {
-            showAlert('Server error. Please try again later.', 'danger');
-        }
-    });
-}
+
 
 // Mark a chat as read
 function markChatAsRead(chatId) {

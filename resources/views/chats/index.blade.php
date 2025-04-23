@@ -513,9 +513,54 @@
 
     <div id="alert-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/js/app.js') }}"></script>
-    <script src="{{ asset('assets/js/chat.js') }}"></script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+           console.log('jQuery is ready');
+       
+           $('#newChatModal').on('shown.bs.modal', function () {
+               console.log('Modal is shown');
+               loadUsersForNewChat();
+           });
+
+           function loadUsersForNewChat() {
+    $.ajax({
+        url: 'http://127.0.0.1:8000/chat-users',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            console.log('users:', response.users);
+            if (response.success) {
+                const users = response.users;
+                const currentUser = { user_id: 1 }; // example, replace with your current user logic
+
+                const newChatSelect = $('#new-chat-user');
+                newChatSelect.empty();
+                newChatSelect.append('<option value="">Select a user</option>');
+
+                const groupUsersSelect = $('#group-users');
+                groupUsersSelect.empty();
+
+                users.forEach(user => {
+                    // !== currentUser.user_id
+                    if (user.id ) {
+                        newChatSelect.append(`<option value="${user.id}">${user.name}</option>`);
+                        groupUsersSelect.append(`<option value="${user.id}">${user.name}</option>`);
+                    }
+                });
+            } else {
+                alert(response.message || 'Failed to load users');
+            }
+        },
+        error: function() {
+            alert('Server error. Please try again later.');
+        }
+    });
+}
+       }); 
+   </script>
 </body>
 </html>

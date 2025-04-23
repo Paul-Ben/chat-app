@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Chat;
 use App\Models\Message;
 use App\Models\ChatParticipant;
+use App\Models\User;
 use App\Events\MessageSent;
 use App\Events\TypingEvent;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,8 @@ class ChatController extends Controller
     public function index()
     {
         $user = Auth::user();
+
+        $users = User::all();
 
         $chats = $user->chats()
             ->with([
@@ -42,7 +45,7 @@ class ChatController extends Controller
                     ->limit(1)
             ])
             ->orderByDesc('last_message_time')
-            ->paginate(15);
+            ->get();
 
         // Add additional computed attributes
         $chats->each(function ($chat) use ($user) {
@@ -54,6 +57,7 @@ class ChatController extends Controller
 
         return view('chats.index', [
             'chats' => $chats,
+            'users' => $users
             // 'unread_count' => $user->unreadMessages()->count()
         ]);
     }
@@ -79,6 +83,16 @@ class ChatController extends Controller
 
     //     return view('chats.index', compact('chats'));
     // }
+
+    public function loadChatUsers()
+    {
+        $users = User::all();
+
+        return response()->json([
+            'success' => true,
+            'users' => $users
+        ], 200);
+    }
 
     public function show(Chat $chat)
     {
