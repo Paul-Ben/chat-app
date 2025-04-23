@@ -53,6 +53,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,6 +62,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 </head>
+
 <body>
     <div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
         <div class="card shadow" style="max-width: 500px; width: 100%;">
@@ -68,33 +70,56 @@
                 <div class="display-3 text-primary mb-2">
                     <i class="bi bi-chat-dots-fill"></i>
                 </div>
+                <div>
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                </div>
                 <h2>Create an Account</h2>
                 <p class="text-muted">Join EDMS-App to connect with friends</p>
             </div>
             <div class="card-body p-4">
                 <div id="alert-container"></div>
                 <form method="POST" action="{{ route('register') }}">
-                @csrf            
-                {{-- <form id="register-form"> --}}
+                    @csrf
+                    {{-- <form id="register-form"> --}}
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
+                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" required>
+                        @error('name')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" required>
+                        @error('email')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                        <small class="text-muted">Password must be at least 6 characters</small>
+                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                        <small class="text-muted">Password must be at least 8 characters</small>
+                        @error('password')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="mb-4">
                         <label for="confirm-password" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="confirm-password" name="password_confirmation" required>
+                        <input type="password" class="form-control" id="confirm-password" name="password_confirmation"
+                            required>
                     </div>
                     <div class="d-grid gap-2 mb-3">
-                        <button type="submit" class="btn btn-primary btn-lg" >Create Account</button>
+                        <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
                         {{-- id="register-btn" --}}
                     </div>
                 </form>
@@ -109,4 +134,5 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('assets/js/app.js') }}"></script>
 </body>
+
 </html>
