@@ -1,4 +1,4 @@
-@extends('layouts.chat')
+{{-- @extends('layouts.chat')
 
 @section('title', 'Chats')
 
@@ -358,4 +358,164 @@
         });
     });
 </script>
-@endsection
+@endsection --}}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDMS-App | Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+</head>
+<body>
+    <div class="container-fluid p-0 vh-100">
+        <div class="row g-0 h-100">
+            <!-- Chat Sidebar -->
+            <div class="col-md-4 col-lg-3 chat-sidebar d-none d-md-block">
+                <div class="sidebar-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div class="me-2">
+                            <img src="https://via.placeholder.com/50" alt="User" class="user-profile-pic profile-pic">
+                        </div>
+                        <div>
+                            <h6 class="mb-0 user-name">Loading...</h6>
+                            <small class="text-muted user-status">Online</small>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="dropdown">
+                            <button class="btn btn-light rounded-circle" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person me-2"></i> Profile</a></li>
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#newChatModal"><i class="bi bi-chat me-2"></i> New Chat</a></li>
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#newGroupModal"><i class="bi bi-people me-2"></i> New Group</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" id="logout-btn"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-search p-2">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control border-0 bg-light" placeholder="Search chats">
+                    </div>
+                </div>
+                <div class="chat-list">
+                    <!-- Chat list will be populated by JavaScript -->
+                    <div class="text-center text-muted p-3">Loading chats...</div>
+                </div>
+            </div>
+
+            <!-- Chat Content -->
+            <div class="col-md-8 col-lg-9 chat-content">
+                <!-- Mobile header with back button -->
+                <div class="chat-header d-flex align-items-center">
+                    <button class="btn back-to-chats d-md-none me-2">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 chat-pic">
+                            <div class="profile-pic bg-secondary d-flex align-items-center justify-content-center text-white">
+                                <span style="font-size: 20px;">?</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 chat-name">Select a chat</h6>
+                            <small class="text-muted chat-status">No chat selected</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Area -->
+                <div class="messages-container">
+                    <div class="text-center text-muted my-5">Select a chat to start messaging</div>
+                </div>
+
+                <!-- Typing indicator -->
+                <div class="typing-indicator px-3 py-1 small" style="display:none;"></div>
+
+                <!-- Message Input -->
+                <div class="message-input-container p-3 border-top">
+                    <form id="message-form">
+                        <div class="input-group">
+                            <label for="attachment-input" class="attachment-btn d-flex align-items-center justify-content-center px-2">
+                                <i class="bi bi-paperclip fs-5"></i>
+                            </label>
+                            <input type="file" id="attachment-input" class="d-none" accept="image/*">
+                            <input type="text" id="message-input" class="form-control" placeholder="Type a message" autocomplete="off">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <div class="attachment-preview mt-2" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Chat Modal -->
+    <div class="modal fade" id="newChatModal" tabindex="-1" aria-labelledby="newChatModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newChatModalLabel">New Chat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="new-chat-form">
+                        <div class="mb-3">
+                            <label for="new-chat-user" class="form-label">Select a user</label>
+                            <select class="form-select" id="new-chat-user" required>
+                                <option value="">Loading users...</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Start Chat</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Group Modal -->
+    <div class="modal fade" id="newGroupModal" tabindex="-1" aria-labelledby="newGroupModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newGroupModalLabel">Create Group</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="new-group-form">
+                        <div class="mb-3">
+                            <label for="group-name" class="form-label">Group Name</label>
+                            <input type="text" class="form-control" id="group-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="group-users" class="form-label">Select Participants</label>
+                            <select class="form-select" id="group-users" multiple required style="height: 150px;">
+                                <option value="">Loading users...</option>
+                            </select>
+                            <small class="text-muted">Hold Ctrl/Cmd to select multiple users</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Group</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="alert-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
+    <script src="{{ asset('assets/js/chat.js') }}"></script>
+</body>
+</html>

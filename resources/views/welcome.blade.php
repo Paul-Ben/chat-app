@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{-- <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
@@ -173,4 +173,40 @@
             </div>
         </div>
     </body>
+</html> --}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDMS-App | Welcome</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+        <div class="card shadow text-center" style="max-width: 400px;">
+            <div class="card-body p-5">
+                <div class="display-3 text-primary mb-4">
+                    <i class="bi bi-chat-dots-fill"></i>
+                </div>
+                <h1 class="mb-4">EDMS-ChatApp</h1>
+                <p class="text-muted mb-4">A Simple, Secure Messaging App</p>
+                <div class="d-grid gap-2">
+                    <a href="{{ route('login') }}" class="btn btn-primary btn-lg">Login</a>
+                    <a href="{{ route('register') }}" class="btn btn-outline-primary btn-lg">Register</a>
+                </div>
+            </div>
+            <div class="card-footer text-muted py-3">
+                By Benue Digital Infrastructure Company
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
 </html>
+

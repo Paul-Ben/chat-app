@@ -1,0 +1,20 @@
+[
+    {
+        "user_id": "0fd78367-41b2-43b2-a1e0-dd2453d94b70",
+        "username": "testone",
+        "email": "testuser1@bdic.ng",
+        "password": "$2y$10$39zSMh6afJXqHLggi2QQjeR2jnzKDa86mdzSWjb6HIYKyI0fa4VVa",
+        "status": "Hey there! I am using EDMS-App",
+        "profile_pic": null,
+        "created_at": "2025-04-22 08:23:46"
+    },
+    {
+        "user_id": "fbf2ab1d-9034-4994-b137-9efe0deefb9a",
+        "username": "testwo",
+        "email": "testuser3@bdic.ng",
+        "password": "$2y$10$H0ZheO7iYAPw2lMIVWHBqOfY4QKMamhasUGjXLawhj.\/I8M9LE4VC",
+        "status": "Hey there! I am using EDMS-App",
+        "profile_pic": null,
+        "created_at": "2025-04-22 08:26:19"
+    }
+]

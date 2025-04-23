@@ -1,4 +1,4 @@
-<x-guest-layout>
+{{-- <x-guest-layout>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -44,4 +44,55 @@
             </x-primary-button>
         </div>
     </form>
-</x-guest-layout>
+</x-guest-layout> --}}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDMS-ChatApp | Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+</head>
+<body>
+    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+        <div class="card shadow" style="max-width: 500px; width: 100%;">
+            <div class="card-header bg-white text-center py-3">
+                <div class="display-3 text-primary mb-2">
+                    <i class="bi bi-chat-dots-fill"></i>
+                </div>
+                <h2>Welcome Back</h2>
+                <p class="text-muted">Log in to continue to EDMS-ChatApp </p>
+            </div>
+            <div class="card-body p-4">
+                <div id="alert-container"></div>
+                <form method="POST" action="{{ route('login') }}">
+                @csrf
+                {{-- <form id="login-form"> --}}
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg" id="login-btn">Log In</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3">
+                Don't have an account? <a href="{{ route('register') }}" class="text-decoration-none">Sign up</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
+</body>
+</html>
+
