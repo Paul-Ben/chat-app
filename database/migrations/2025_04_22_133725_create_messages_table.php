@@ -12,26 +12,34 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('messages', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('chat_id')->constrained()->cascadeOnDelete();
-            $table->foreignUuid('sender_id')->constrained('users')->cascadeOnDelete();
+            $table->id();
             
-       
+            $table->unsignedBigInteger('chat_id');
+            $table->unsignedBigInteger('sender_id');
+            
             $table->text('content')->nullable();
             $table->string('media_url')->nullable();
             $table->string('media_type')->nullable();
             
-         
             $table->timestamp('read_at')->nullable();
             $table->timestamp('delivered_at')->nullable();
             
+            $table->boolean('is_system_message')->default(false);
+            $table->string('system_message_type')->nullable();
+            $table->json('system_message_metadata')->nullable();
             
-            $table->boolean('is_system_message')->default(false); 
-            $table->string('system_message_type')->nullable(); 
-            $table->json('system_message_metadata')->nullable(); 
-            
-            $table->softDeletes(); 
+            $table->softDeletes();
             $table->timestamps();
+            
+            $table->foreign('chat_id')
+                  ->references('id')
+                  ->on('chats')
+                  ->onDelete('cascade');
+                  
+            $table->foreign('sender_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
         });
     }
 

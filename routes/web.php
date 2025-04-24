@@ -20,10 +20,16 @@ Route::middleware('auth')->group(function () {
     
      // Chat routes
      Route::get('/chat-users', [ChatController::class, 'loadChatUsers'])->name('chats.users');
-     Route::get('/chats', [ChatController::class, 'index'])->name('chats.index');
+     Route::post('/create-chat', [ChatController::class, 'create'])->name('create.chat.user');
+     Route::get('/chat', [ChatController::class, 'listChats']);
+     Route::get('/me', [ChatController::class, 'myDetails']);
+      Route::get('/chats', [ChatController::class, 'index'])->name('chats.index');
      Route::get('/chats/{chat}', [ChatController::class, 'show'])->name('chats.show');
      
      // Message routes
+     Route::get('/chat/{chatId}/messages', [ChatController::class, 'listMessages']);
+     Route::post('/chat/message/send', [ChatController::class, 'sendMessage']);
+
      Route::post('/chats/{chat}/messages', [ChatController::class, 'storeMessage'])->name('messages.store');
      
      // Group management

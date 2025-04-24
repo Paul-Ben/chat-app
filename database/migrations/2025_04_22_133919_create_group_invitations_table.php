@@ -12,15 +12,27 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('group_invitations', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('chat_id')->constrained()->cascadeOnDelete();
-            $table->foreignUuid('invited_by')->constrained('users')->cascadeOnDelete();
-            $table->string('email')->nullable(); 
-            $table->string('phone')->nullable(); 
-            $table->string('token')->unique(); 
+            $table->id(); 
+            
+            $table->unsignedBigInteger('chat_id');
+            $table->unsignedBigInteger('invited_by');
+            
+            $table->string('email')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('token')->unique();
             $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
+            
+            $table->foreign('chat_id')
+                  ->references('id')
+                  ->on('chats')
+                  ->onDelete('cascade');
+                  
+            $table->foreign('invited_by')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
         });
     }
 

@@ -490,47 +490,7 @@ function sendMessage(event) {
 }
 
 // Create a new one-on-one chat
-function createNewChat(event) {
-    event.preventDefault();
-    
-    const userId = $('#new-chat-user').val();
-    if (!userId) {
-        showAlert('Please select a user', 'warning');
-        return;
-    }
-    
-    $.ajax({
-        url: 'api/chats.php',
-        type: 'POST',
-        data: {
-            action: 'create',
-            user_id: userId
-        },
-        dataType: 'json',
-        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('edms_token') },
-        success: function(response) {
-            if (response.success) {
-                $('#newChatModal').modal('hide');
-                
-                // Check if this is an existing chat or new one
-                const existingChatIndex = chats.findIndex(c => c.chat_id === response.chat.chat_id);
-                if (existingChatIndex !== -1) {
-                    chats[existingChatIndex] = response.chat;
-                } else {
-                    chats.push(response.chat);
-                }
-                
-                renderChatList();
-                openChat(response.chat);
-            } else {
-                showAlert(response.message || 'Failed to create chat', 'danger');
-            }
-        },
-        error: function() {
-            showAlert('Server error. Please try again later.', 'danger');
-        }
-    });
-}
+
 
 // Create a new group chat
 function createNewGroup(event) {
