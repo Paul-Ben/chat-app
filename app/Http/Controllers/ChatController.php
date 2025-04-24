@@ -57,7 +57,6 @@ class ChatController extends Controller
         //         ? null
         //         : $chat->participants->where('user_id', '!=', $user->id)->first();
         // });
-
         return view('chats.index', 
         // [
         //     'chats' => $chats,
