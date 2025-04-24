@@ -380,11 +380,11 @@
                 <div class="sidebar-header d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
                         <div class="me-2">
-                            <img src="https://via.placeholder.com/50" alt="User"
+                            <img src="https://cdn.pixabay.com/photo/2016/04/01/10/11/avatar-1299805_1280.png" alt="User"
                                 class="user-profile-pic profile-pic">
                         </div>
                         <div>
-                            <h6 class="mb-0 user-name">Loading...</h6>
+                            <h6 class="mb-0 user-name">{{ Auth::user()->name }}</h6>
                             <small class="text-muted user-status">Online</small>
                         </div>
                     </div>
@@ -404,8 +404,15 @@
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" href="#" id="logout-btn"><i
-                                            class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <a class="dropdown-item" href="#"
+                                            onclick="event.preventDefault();
+                                                            this.closest('form').submit();"
+                                            id="logout-btn"><i class="bi bi-box-arrow-right me-2"></i> Logout</a>
+                                    </form>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -554,15 +561,27 @@
             // $('#message-input').on('input', handleTyping);
             // $('#attachment-input').on('change', handleAttachment); 
 
+            // $('#newChatModal').on('shown.bs.modal', function() {
+            //     console.log('Modal is shown');
+            //     loadUsersForNewChat();
+            // });
+
+            let usersLoaded = false;
+
             $('#newChatModal').on('shown.bs.modal', function() {
-                console.log('Modal is shown');
-                loadUsersForNewChat();
+                if (!usersLoaded) {
+                    loadUsersForNewChat();
+                    usersLoaded = true;
+                }
             });
+
+
 
             function fetchAuthUser() {
 
                 $.ajax({
-                    url: 'http://127.0.0.1:8000/me',
+                    url: 'http://chat-app.test/me',
+                    // url: 'http://127.0.0.1:8000/me',
                     method: 'GET',
                     success: function(response) {
                         currentUser = response.user;
@@ -580,7 +599,8 @@
 
             function loadUsersForNewChat() {
                 $.ajax({
-                    url: 'http://127.0.0.1:8000/chat-users',
+                    url: 'http://chat-app.test/chat-users',
+                    // url: 'http://127.0.0.1:8000/chat-users',
                     type: 'GET',
                     dataType: 'json',
                     success: function(response) {
@@ -630,7 +650,8 @@
                 }
 
                 $.ajax({
-                    url: 'http://127.0.0.1:8000/create-chat',
+                    url: 'http://chat-app.test/create-chat',
+                    // url: 'http://127.0.0.1:8000/create-chat',
                     type: 'POST',
                     data: {
                         action: 'create',
@@ -671,7 +692,8 @@
             // Load all chats for the current user
             function loadChats() {
                 $.ajax({
-                    url: 'http://127.0.0.1:8000/chat',
+                    url: 'http://chat-app.test/chat',
+                    // url: 'http://127.0.0.1:8000/chat',
                     type: 'GET',
                     data: {
                         action: 'list'
@@ -705,8 +727,8 @@
 
                     error: function() {
 
-                            showAlert('Server error. Please try again later.', 'danger');
-                        
+                        showAlert('Server error. Please try again later.', 'danger');
+
                     }
                 });
             }
@@ -888,7 +910,8 @@
             // Load messages for a chat
             function loadMessages(chatId) {
                 $.ajax({
-                    url: `http://127.0.0.1:8000/chat/${chatId}/messages`,
+                    url: `http://chat-app.test/chat/${chatId}/messages`,
+                    // url: `http://127.0.0.1:8000/chat/${chatId}/messages`,
                     type: 'GET',
                     data: {
                         action: 'list',

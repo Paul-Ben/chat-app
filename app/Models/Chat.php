@@ -26,14 +26,14 @@ class Chat extends Model
     {
         return $this->hasMany(Message::class);
     }
-    // public function participants()
-    // {
-    //     return $this->hasMany(ChatParticipant::class);
-    // }
     public function participants()
     {
-        return $this->belongsToMany(User::class, 'chat_participants', 'chat_id', 'user_id');
+        return $this->hasMany(ChatParticipant::class);
     }
+    // public function participants()
+    // {
+    //     return $this->belongsToMany(User::class, 'chat_participants', 'chat_id', 'user_id');
+    // }
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');

@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Facades\Log;
 
 class ChatController extends Controller
 {
@@ -32,23 +34,23 @@ class ChatController extends Controller
         //         'admin:id,name,profile_pic',
         //         'creator:id,name'
         //     ])
-            // ->withCount([
-            //     'unreadMessages' => function ($query) use ($user) {
-            //         $query->where('sender_id', '!=', $user->id)
-            //             ->whereDoesntHave('readReceipts', function ($q) use ($user) {
-            //                 $q->where('user_id', $user->id);
-            //             });
-            //     },
-            //     'participants as total_participants'
-            // ])
-            // ->addSelect([
-            //     'last_message_time' => Message::select('created_at')
-            //         ->whereColumn('chat_id', 'chats.id')
-            //         ->latest()
-            //         ->limit(1)
-            // ])
-            // ->orderByDesc('last_message_time')
-            // ->get();
+        // ->withCount([
+        //     'unreadMessages' => function ($query) use ($user) {
+        //         $query->where('sender_id', '!=', $user->id)
+        //             ->whereDoesntHave('readReceipts', function ($q) use ($user) {
+        //                 $q->where('user_id', $user->id);
+        //             });
+        //     },
+        //     'participants as total_participants'
+        // ])
+        // ->addSelect([
+        //     'last_message_time' => Message::select('created_at')
+        //         ->whereColumn('chat_id', 'chats.id')
+        //         ->latest()
+        //         ->limit(1)
+        // ])
+        // ->orderByDesc('last_message_time')
+        // ->get();
 
         // Add additional computed attributes
         // $chats->each(function ($chat) use ($user) {
@@ -57,13 +59,14 @@ class ChatController extends Controller
         //         ? null
         //         : $chat->participants->where('user_id', '!=', $user->id)->first();
         // });
-        return view('chats.index', 
-        // [
-        //     'chats' => $chats,
-        //     'users' => $users
-        //     // 'unread_count' => $user->unreadMessages()->count()
-        // ]
-    );
+        return view(
+            'chats.index',
+            // [
+            //     'chats' => $chats,
+            //     'users' => $users
+            //     // 'unread_count' => $user->unreadMessages()->count()
+            // ]
+        );
     }
     // public function index()
     // {
@@ -101,6 +104,7 @@ class ChatController extends Controller
     public function loadChatUsers()
     {
         $users = User::all();
+
 
         return response()->json([
             'success' => true,
@@ -227,7 +231,7 @@ class ChatController extends Controller
         $userId = $request->input('user_id');
         $currentUserId = Auth::id();
 
-        if ($userId === $currentUserId) {
+        if ($userId == $currentUserId) {
             return response()->json([
                 'success' => false,
                 'message' => 'Cannot create chat with yourself'
@@ -235,60 +239,66 @@ class ChatController extends Controller
         }
 
         return DB::transaction(function () use ($userId, $currentUserId) {
-            // Check if chat already exists between these users
-            $existingChat = $this->findExistingChat($currentUserId, $userId);
+            try {
+                // Check if chat already exists between these users
+                $existingChat = $this->findExistingChat($currentUserId, $userId);
 
-            if ($existingChat) {
+                if ($existingChat) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Chat already exists',
+                        'chat' => $this->formatChatResponse($existingChat)
+                    ]);
+                }
+
+                // Create new chat
+                $chat = Chat::create([
+                    'is_group' => false,
+                    'created_by' => $currentUserId,
+                ]);
+
+                // Get users
+                $currentUser = User::findOrFail($currentUserId);
+                $otherUser = User::findOrFail($userId);
+
+                // Add participants
+                ChatParticipant::create([
+                    'chat_id' => $chat->id,
+                    'user_id' => $currentUserId,
+                    'role' => 'creator',
+                ]);
+
+                ChatParticipant::create([
+                    'chat_id' => $chat->id,
+                    'user_id' => $userId,
+                    'role' => 'member',
+                ]);
+
                 return response()->json([
                     'success' => true,
-                    'message' => 'Chat already exists',
-                    'chat' => $this->formatChatResponse($existingChat)
+                    'message' => 'Chat created successfully',
+                    'chat' => $this->formatChatResponse($chat->load(['participants.user']))
                 ]);
+            } catch (Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error creating chat: ' . $e->getMessage()
+                ], 500);
             }
-
-            // Create new chat
-            $chat = Chat::create([
-                'is_group' => false,
-                'created_by' => $currentUserId,
-            ]);
-
-            // Get users
-            $currentUser = User::findOrFail($currentUserId);
-            $otherUser = User::findOrFail($userId);
-
-            // Add participants
-            ChatParticipant::create([
-                'chat_id' => $chat->id,
-                'user_id' => $currentUserId,
-                'role' => 'creator',
-            ]);
-
-            ChatParticipant::create([
-                'chat_id' => $chat->id,
-                'user_id' => $userId,
-                'role' => 'member',
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Chat created successfully',
-                'chat' => $this->formatChatResponse($chat->load(['participants.user']))
-            ]);
         });
     }
 
     private function findExistingChat($user1, $user2)
     {
         return Chat::where('is_group', false)
-            ->whereHas('participants', function($query) use ($user1) {
+            ->whereHas('participants', function ($query) use ($user1) {
                 $query->where('user_id', $user1);
             })
-            ->whereHas('participants', function($query) use ($user2) {
+            ->whereHas('participants', function ($query) use ($user2) {
                 $query->where('user_id', $user2);
             })
             ->with(['participants.user'])
             ->first();
-
     }
 
     private function formatChatResponse(Chat $chat)
@@ -299,17 +309,17 @@ class ChatController extends Controller
             'name' => $chat->name,
             'avatar' => $chat->avatar,
             'created_at' => $chat->created_at->toDateTimeString(),
-            'participants' => $chat->participants->map(function($participant) {
+            'participants' => $chat->participants->map(function ($participant) {
                 return [
                     'user_id' => $participant->user_id,
                     'name' => $participant->user->name,
                     'profile_pic' => $participant->user->profile_photo_path,
                     'role' => $participant->role,
-                    'status' => 'online', 
-                    'unread_count' => 0, 
+                    'status' => 'online',
+                    'unread_count' => 0,
                 ];
             })->toArray(),
-            'last_message' => null 
+            'last_message' => null
         ];
     }
 
@@ -317,24 +327,24 @@ class ChatController extends Controller
     {
         // Get authenticated user
         $user = Auth::user();
-        
+
         // Load chats where user is a participant
-        $chats = Chat::whereHas('participants', function($query) use ($user) {
+        $chats = Chat::whereHas('participants', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })
-        ->with(['participants.user' => function($query) {
-            $query->select('id', 'name', 'profile_pic', 'status');
-        }])
-        ->orderByDesc('updated_at')
-        ->get();
+            ->with(['participants.user' => function ($query) {
+                $query->select('id', 'name', 'profile_pic', 'status');
+            }])
+            ->orderByDesc('updated_at')
+            ->get();
 
-        log::error();
-        
-        $formattedChats = $chats->map(function($chat) {
+        Log::error();
+
+        $formattedChats = $chats->map(function ($chat) {
             return [
                 'chat_id' => $chat->id,
                 'is_group' => $chat->is_group,
-                'participants' => $chat->participants->map(function($participant) {
+                'participants' => $chat->participants->map(function ($participant) {
                     return [
                         'user_id' => $participant->user_id,
                         'name' => $participant->user->name,
@@ -345,23 +355,23 @@ class ChatController extends Controller
                 })->toArray(),
                 'created_at' => $chat->created_at->toDateTimeString(),
                 'updated_at' => $chat->updated_at->toDateTimeString(),
-                'last_message' => null, 
+                'last_message' => null,
             ];
         });
-        
+
         return response()->json([
             'success' => true,
             'chats' => $formattedChats
         ]);
     }
 
-     /**
+    /**
      * List messages for a specific chat.
      */
     public function listMessages(Request $request, $chatId)
     {
         $user = auth()->user();
-        
+
         if (empty($chatId)) {
             return response()->json(['success' => false, 'message' => 'Chat ID is required'], 400);
         }
@@ -422,5 +432,4 @@ class ChatController extends Controller
             'message' => $message
         ], 201);
     }
-
 }
